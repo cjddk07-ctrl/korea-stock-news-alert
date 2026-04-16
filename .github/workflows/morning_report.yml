@@ -1,0 +1,31 @@
+name: 아침 시황 보고서 (오전 7시 KST)
+
+on:
+  schedule:
+    - cron: '0 22 * * 0-4'   # UTC 22:00 = KST 07:00 (일~목 → KST 월~금)
+  workflow_dispatch:
+
+jobs:
+  morning:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Korean font
+        run: sudo apt-get install -y fonts-nanum
+
+      - name: Install dependencies
+        run: pip install feedparser requests yfinance reportlab
+
+      - name: Run morning report
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python morning_report.py

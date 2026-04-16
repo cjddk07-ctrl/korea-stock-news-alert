@@ -1,0 +1,31 @@
+name: 저녁 시황 보고서 (오후 5시 KST)
+
+on:
+  schedule:
+    - cron: '0 8 * * 1-5'   # UTC 08:00 = KST 17:00 (월~금)
+  workflow_dispatch:
+
+jobs:
+  evening:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Korean font
+        run: sudo apt-get install -y fonts-nanum
+
+      - name: Install dependencies
+        run: pip install feedparser requests pykrx reportlab
+
+      - name: Run evening report
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python evening_report.py
