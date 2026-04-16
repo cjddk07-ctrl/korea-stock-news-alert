@@ -103,6 +103,8 @@ def get_feeds():
     feeds += [
         ('한국경제', 'https://www.hankyung.com/feed/all-news'),
         ('연합뉴스',  'https://www.yna.co.kr/rss/news.xml'),
+        ('매일경제', 'https://www.mk.co.kr/rss/40300001/'),
+        ('이데일리', 'https://rss.edaily.co.kr/edaily_stock.xml'),
     ]
     return feeds
 

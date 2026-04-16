@@ -101,6 +101,26 @@ def fetch_news(limit: int = 12):
         except Exception as ex:
             print(f'뉴스 오류: {ex}')
 
+    # 매일경제 / 이데일리 RSS
+    extra_feeds = [
+        ('매일경제', 'https://www.mk.co.kr/rss/40300001/'),
+        ('이데일리', 'https://rss.edaily.co.kr/edaily_stock.xml'),
+    ]
+    for source, url in extra_feeds:
+        try:
+            feed = feedparser.parse(url)
+            for e in feed.entries[:8]:
+                t = getattr(e, 'published_parsed', None) or getattr(e, 'updated_parsed', None)
+                pub = datetime.fromtimestamp(time.mktime(t), tz=timezone.utc) if t else None
+                if pub and pub < cutoff:
+                    continue
+                title = e.get('title', '').strip()
+                link  = e.get('link', '').strip()
+                if title and link:
+                    items.append({'title': title, 'link': link, 'pub': pub})
+        except Exception as ex:
+            print(f'[{source}] 뉴스 오류: {ex}')
+
     # 제목 앞 20자 기준 중복 제거
     seen, unique = set(), []
     for item in items:
